@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
  * Created by root on 07.11.14.
  */
 public class WeatherContract {
-    public class LocationEntry implements BaseColumns{
+    public static class LocationEntry implements BaseColumns{
         public static final String TABLE_NAME = "location";
 
 
@@ -19,7 +19,7 @@ public class WeatherContract {
 
     }
 
-    public class WeatherEntry implements BaseColumns{
+    public static class WeatherEntry implements BaseColumns{
         public static final String TABLE_NAME = "weather";
 
         public static final String COLUMN_LOC_KEY = "location_id";
