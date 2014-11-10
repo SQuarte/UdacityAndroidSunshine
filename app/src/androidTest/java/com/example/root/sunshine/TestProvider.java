@@ -19,51 +19,72 @@ public class TestProvider extends AndroidTestCase {
         mContext.deleteDatabase(WeatherDbHelper.DB_NAME);
     }
 
-    public void testInsertReadDb() {
 
-
+    public void testInsertReadProvider() {
         WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
         ContentValues testValues = TestDB.createNorthPoleLocationValues();
-
         long locationRowId;
         locationRowId = db.insert(LocationEntry.TABLE_NAME, null, testValues);
-
         assertTrue(locationRowId != -1);
         Log.d(LOG_TAG, "New row id: " + locationRowId);
-
-        Cursor cursor = db.query(
-                LocationEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null, // columns to filter by row groups
-                null // sort order
-        );
-
-        TestDB.validateCursor(cursor, testValues);
-
-// Fantastic. Now that we have a location, add some weather!
-        ContentValues weatherValues = TestDB.createWeatherValues(locationRowId);
-
-        long weatherRowId = db.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
-        assertTrue(weatherRowId != -1);
-
-// A cursor is your primary interface to the query results.
-        Cursor weatherCursor = db.query(
-                WeatherEntry.TABLE_NAME, // Table to Query
+        Cursor cursor = mContext.getContentResolver().query(
+                LocationEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
-                null, // columns to group by
-                null, // columns to filter by row groups
                 null // sort order
         );
-
+        TestDB.validateCursor(cursor, testValues);
+        cursor = mContext.getContentResolver().query(
+                LocationEntry.buildLocationUri(locationRowId),
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null // sort order
+        );
+        TestDB.validateCursor(cursor, testValues);
+// Fantastic. Now that we have a location, add some weather!
+        ContentValues weatherValues = TestDB.createWeatherValues(locationRowId);
+        long weatherRowId = db.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
+        assertTrue(weatherRowId != -1);
+// A cursor is your primary interface to the query results.
+        Cursor weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.CONTENT_URI, // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null // columns to group by
+        );
         TestDB.validateCursor(weatherCursor, weatherValues);
-
         dbHelper.close();
+    }
+
+
+    public void testGetType() {
+// content://com.example.android.sunshine.app/weather/
+        String type = mContext.getContentResolver().getType(WeatherEntry.CONTENT_URI);
+// vnd.android.cursor.dir/com.example.android.sunshine.app/weather
+        assertEquals(WeatherEntry.CONTENT_TYPE, type);
+        String testLocation = "94074";
+// content://com.example.android.sunshine.app/weather/94074
+        type = mContext.getContentResolver().getType(
+                WeatherEntry.buildWeatherLocation(testLocation));
+// vnd.android.cursor.dir/com.example.android.sunshine.app/weather
+        assertEquals(WeatherEntry.CONTENT_TYPE, type);
+        String testDate = "20140612";
+// content://com.example.android.sunshine.app/weather/94074/20140612
+        type = mContext.getContentResolver().getType(
+                WeatherEntry.buildWeatherLocationWithDate(testLocation, testDate));
+// vnd.android.cursor.item/com.example.android.sunshine.app/weather
+        assertEquals(WeatherEntry.CONTENT_ITEM_TYPE, type);
+// content://com.example.android.sunshine.app/location/
+        type = mContext.getContentResolver().getType(LocationEntry.CONTENT_URI);
+// vnd.android.cursor.dir/com.example.android.sunshine.app/location
+        assertEquals(LocationEntry.CONTENT_TYPE, type);
+// content://com.example.android.sunshine.app/location/1
+        type = mContext.getContentResolver().getType(LocationEntry.buildLocationUri(1L));
+// vnd.android.cursor.item/com.example.android.sunshine.app/location
+        assertEquals(LocationEntry.CONTENT_ITEM_TYPE, type);
     }
 }
