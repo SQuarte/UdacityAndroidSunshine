@@ -220,12 +220,49 @@ public class WeatherProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int count;
+        switch (match) {
+            case WEATHER: {
+                count = db.delete(WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            case LOCATION: {
+                count  = db.delete(WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (null == selection || 0 != count) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int count;
+        switch (match) {
+            case WEATHER: {
+                count = db.update(WeatherContract.WeatherEntry.TABLE_NAME, values, selection,selectionArgs);
+                break;
+            }
+            case LOCATION: {
+                count = db.update(WeatherContract.LocationEntry.TABLE_NAME, values, selection,selectionArgs);
+                break;
+
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (0 != count) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
     }
 
     public static UriMatcher buildUriMatcher(){
