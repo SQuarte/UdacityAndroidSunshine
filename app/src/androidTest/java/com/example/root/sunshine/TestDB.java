@@ -19,6 +19,10 @@ import static com.example.root.sunshine.data.WeatherContract.WeatherEntry;
  */
 public class TestDB extends AndroidTestCase {
 
+
+    static final String TEST_LOCATION = "99705";
+    static final String TEST_DATE = "20141205";
+
     public static final String LOG_TAG = TestDB.class.getSimpleName();
     public void testCreateDb() throws Throwable {
         mContext.deleteDatabase(WeatherDbHelper.DB_NAME);
