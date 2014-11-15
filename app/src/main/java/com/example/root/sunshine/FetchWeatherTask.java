@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.example.root.sunshine.data.WeatherContract;
 
@@ -33,13 +32,11 @@ import static com.example.root.sunshine.data.WeatherContract.WeatherEntry;
 /**
  * Created by root on 15.11.14.
  */
-public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
+public class FetchWeatherTask extends AsyncTask<String,Void,Void> {
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-    private ArrayAdapter<String> mForecastAdapter;
     private final Context mContext;
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
+    public FetchWeatherTask(Context context) {
         mContext = context;
-        mForecastAdapter = forecastAdapter;
     }
     /* The date/time conversion code is going to be moved outside the asynctask later,
     * so for convenience we're breaking it out into its own method now.
@@ -74,14 +71,11 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
     private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays,
                                             String locationSetting)
             throws JSONException {
-// These are the names of the JSON objects that need to be extracted.
-// Location information
         final String OWM_CITY = "city";
         final String OWM_CITY_NAME = "name";
         final String OWM_COORD = "coord";
         final String OWM_COORD_LAT = "lat";
         final String OWM_COORD_LONG = "lon";
-// Weather information. Each day's forecast info is an element of the "list" array.
         final String OWM_LIST = "list";
         final String OWM_DATETIME = "dt";
         final String OWM_PRESSURE = "pressure";
@@ -152,13 +146,13 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
         if (cVVector.size() > 0) {
             ContentValues[] values = new ContentValues[cVVector.size()];
             cVVector.toArray(values);
-            mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, (ContentValues[]) cVVector.toArray());
+            mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, values);
 
         }
         return resultStrs;
     }
     @Override
-    protected String[] doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         if (params.length == 0) {
             return null;
         }
@@ -217,22 +211,14 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
             }
         }
         try {
-            return getWeatherDataFromJson(forecastJsonStr, numDays, locationQuery);
+             getWeatherDataFromJson(forecastJsonStr, numDays, locationQuery);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
         return null;
     }
-    @Override
-    protected void onPostExecute(String[] result) {
-        if (result != null) {
-            mForecastAdapter.clear();
-            for(String dayForecastStr : result) {
-                mForecastAdapter.add(dayForecastStr);
-            }
-        }
-    }
+
 
     private long addLocation(String locationSetting, String cityName, double lat, double lon){
 
