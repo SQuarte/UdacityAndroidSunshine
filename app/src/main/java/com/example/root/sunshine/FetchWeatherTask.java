@@ -104,7 +104,7 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
         double cityLongitude = coordJSON.getLong(OWM_COORD_LONG);
         Log.v(LOG_TAG, cityName + ", with coord: " + cityLatitude + " " + cityLongitude);
         long locationID = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
-        Vector<ContentValues> cVVector = new Vector<>(weatherArray.length());
+        Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
         String[] resultStrs = new String[numDays];
         for(int i = 0; i < weatherArray.length(); i++) {
             long dateTime;
@@ -148,6 +148,12 @@ public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
             String highAndLow = formatHighLows(high, low);
             String day = getReadableDateString(dateTime);
             resultStrs[i] = day + " - " + description + " - " + highAndLow;
+        }
+        if (cVVector.size() > 0) {
+            ContentValues[] values = new ContentValues[cVVector.size()];
+            cVVector.toArray(values);
+            mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, (ContentValues[]) cVVector.toArray());
+
         }
         return resultStrs;
     }
