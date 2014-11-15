@@ -1,5 +1,6 @@
 package com.example.root.sunshine;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -86,7 +88,7 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         forecastAdapter = new SimpleCursorAdapter(
@@ -131,14 +133,26 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
         ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(forecastAdapter);
 
-      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(),DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT,forecastAdapter.getItem(position));
+                boolean isMetric = Utility.isMetric(getActivity());
+                SimpleCursorAdapter adapter = (SimpleCursorAdapter)parent.getAdapter();
+                Cursor cursor =  adapter.getCursor();
+                if (null != cursor && cursor.moveToPosition(position)){
+                String date = Utility.formatDate(cursor.getString(COL_WEATHER_DATE));
+                String minTemp = Utility.formatTemperature(cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
+                String maxTemp = Utility.formatTemperature(cursor.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
+                StringBuilder builder = new StringBuilder(date);
+                builder.append(" - ").append(cursor.getString(COL_WEATHER_DESC)).append(" - ").append(minTemp) .append("/").append(maxTemp);
+
+
+                intent.putExtra(Intent.EXTRA_TEXT,builder.toString());
                 startActivity(intent);
+                }
             }
-        });*/
+        });
         return rootView;
     }
 
