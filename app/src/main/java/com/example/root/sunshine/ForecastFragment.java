@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.root.sunshine.data.WeatherContract;
 
@@ -59,7 +58,7 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
         getLoaderManager().initLoader(FORECAST_LOADER,null,this);
     }
 
-    SimpleCursorAdapter forecastAdapter;
+    ForecastAdapter forecastAdapter;
 
 
     @Override
@@ -92,45 +91,12 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        forecastAdapter = new SimpleCursorAdapter(
+        forecastAdapter = new ForecastAdapter(
                 getActivity(),
-                R.layout.list_item_forecast,
                 null,
-                new String[]{WeatherContract.WeatherEntry.COLUMN_DATETEXT,
-                        WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
-                        WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
-                        WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
-                },
-                new int[]{R.id.list_item_date_textview,
-                        R.id.list_item_forecast_textview,
-                        R.id.list_item_high_textview,
-                        R.id.list_item_low_textview
-                },
-                0
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         );
 
-
-        forecastAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                boolean isMetric = Utility.isMetric(getActivity());
-                switch (columnIndex) {
-                    case COL_WEATHER_MAX_TEMP:
-                    case COL_WEATHER_MIN_TEMP: {
-                        ((TextView) view).setText(Utility.formatTemperature(
-                                cursor.getDouble(columnIndex), isMetric));
-                        return true;
-                    }
-                    case COL_WEATHER_DATE: {
-                        String dateString = cursor.getString(columnIndex);
-                        TextView dateView = (TextView) view;
-                        dateView.setText(Utility.formatDate(dateString));
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
         ListView listView = (ListView)rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(forecastAdapter);
 
@@ -138,7 +104,7 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(),DetailActivity.class);
-                SimpleCursorAdapter adapter = (SimpleCursorAdapter)parent.getAdapter();
+                ForecastAdapter adapter = (ForecastAdapter)parent.getAdapter();
                 Cursor cursor =  adapter.getCursor();
                 if (null != cursor && cursor.moveToPosition(position)){
                     intent.putExtra(Intent.EXTRA_TEXT, cursor.getString(COL_WEATHER_DATE));
