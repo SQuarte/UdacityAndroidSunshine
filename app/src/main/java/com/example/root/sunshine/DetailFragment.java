@@ -140,7 +140,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 WeatherEntry.COLUMN_HUMIDITY,
                 WeatherEntry.COLUMN_PRESSURE,
                 WeatherEntry.COLUMN_WIND_SPEED,
-                  WeatherEntry.COLUMN_DEGREES
+                  WeatherEntry.COLUMN_DEGREES,
+                  WeatherEntry.COLUMN_WEATHER_ID
 
         };
 
@@ -180,7 +181,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 ), isMetric);
         minTempTextView.setText(minTemp);
         maxTempTextView.setText(maxTemp);
-        weatherImageView.setImageResource(R.drawable.ic_launcher);
+        Integer state = cursor.getInt(cursor.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID));
+        weatherImageView.setImageResource(Utility.getArtResourceForWeatherCondition(state));
         float humidity =  cursor.getFloat(
                 cursor.getColumnIndex(WeatherEntry.COLUMN_HUMIDITY)
         );

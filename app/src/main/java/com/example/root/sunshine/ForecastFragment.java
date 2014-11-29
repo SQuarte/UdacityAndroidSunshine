@@ -41,7 +41,9 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
             WeatherEntry.COLUMN_SHORT_DESC,
             WeatherEntry.COLUMN_MAX_TEMP,
             WeatherEntry.COLUMN_MIN_TEMP,
-            LocationEntry.COLUMN_LOCATION_SETTING
+            LocationEntry.COLUMN_LOCATION_SETTING,
+           WeatherEntry.COLUMN_WEATHER_ID
+
     };
 
 
@@ -51,6 +53,7 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
     public static final int COL_WEATHER_MAX_TEMP = 3;
     public static final int COL_WEATHER_MIN_TEMP = 4;
     public static final int COL_LOCATION_SETTING = 5;
+    public static final int COL_WEATHER_STATE_ID = 6;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
