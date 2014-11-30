@@ -49,7 +49,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView windSpeedTextView;
     private TextView pressureTextView;
     private TextView infoTextView;
-
+    private String dateString ;
     public DetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -58,6 +58,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG,"HERE1");
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            dateString = arguments.getString(DetailActivity.DATE_KEY);
+        }
         View rootView = inflater.inflate(R.layout.fragment2_detail, container, false);
         dateTextView = (TextView)rootView.findViewById(R.id.detail_date_textview);
         dayTextView = (TextView)rootView.findViewById(R.id.detail_day_textview);
@@ -89,7 +93,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         super.onResume();
-        if (mLocation != null &&
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra(DetailActivity.DATE_KEY)  && mLocation != null &&
                 !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
         }
@@ -126,9 +131,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String sortOrder = WeatherEntry.COLUMN_DATETEXT + " ASC";
         mLocation = Utility.getPreferredLocation(getActivity());
-        String date =  this.getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
         Uri weatherForLocationUri = WeatherEntry.buildWeatherLocationWithDate(
-                mLocation, date);
+                mLocation, dateString);
           String[] columns= {
 
                 WeatherEntry.TABLE_NAME + "." + WeatherEntry._ID,

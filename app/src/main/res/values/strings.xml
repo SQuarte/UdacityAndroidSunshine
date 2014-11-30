@@ -26,10 +26,10 @@
         <item>Imperial</item>
     </string-array>
 
-    <string name="today">Сегодня</string>
+    <string name="today">Today</string>
 
     <!-- Date label when displaying tomorrow's weather forecast [CHAR LIMIT=20] -->
-    <string name="tomorrow">Завтра</string>
+    <string name="tomorrow">Tomorrow</string>
     <!-- Date format for displaying day of week and date (i.e. Mon Jun 1) [CHAR LIMIT=20] -->
     <string name="format_full_friendly_date">
         <xliff:g id="day_of_week">%1$s</xliff:g>, <xliff:g id="date">%2$s</xliff:g>
