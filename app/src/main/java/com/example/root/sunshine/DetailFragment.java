@@ -66,7 +66,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         dateTextView = (TextView)rootView.findViewById(R.id.detail_date_textview);
         dayTextView = (TextView)rootView.findViewById(R.id.detail_day_textview);
         maxTempTextView = (TextView)rootView.findViewById(R.id.detail_high_temp_textview);
-        minTempTextView = (TextView)rootView.findViewById(R.id.detaiL_low_temp_textview);
+        minTempTextView = (TextView)rootView.findViewById(R.id.detail_low_temp_textview);
         weatherImageView = (ImageView)rootView.findViewById(R.id.detail_weather_imageview);
         humidityTextView = (TextView)rootView.findViewById(R.id.detail_humidity_textview);
         windSpeedTextView = (TextView)rootView.findViewById(R.id.detail_wind_textview);
