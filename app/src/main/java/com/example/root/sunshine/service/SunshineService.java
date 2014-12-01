@@ -1,6 +1,7 @@
 package com.example.root.sunshine.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -210,5 +211,16 @@ public class SunshineService extends IntentService {
         }
 
 
+    }
+
+    static public class AlarmReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG,"HERE");
+            Intent sendIntent = new Intent(context, SunshineService.class);
+            sendIntent.putExtra(ForecastFragment.LOCATION, intent.getStringExtra(ForecastFragment.LOCATION));
+            context.startService(sendIntent);
+        }
     }
 }
