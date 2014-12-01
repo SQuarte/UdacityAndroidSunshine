@@ -1,5 +1,6 @@
 package com.example.root.sunshine;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.root.sunshine.data.WeatherContract;
+import com.example.root.sunshine.service.SunshineService;
 
 import java.util.Date;
 
@@ -31,6 +33,7 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     private boolean useTodayLayout;
+    public final static String LOCATION = "intent_params";
     private ListView listView;
     private static final int FORECAST_LOADER = 0;
     private String mLocation;
@@ -87,9 +90,9 @@ public  class ForecastFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     public void updateWeather(){
-        String location = Utility.getPreferredLocation(getActivity());
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
-        fetchWeatherTask.execute(location);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(LOCATION,Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
     }
     public interface Callback {
         /**
