@@ -10,6 +10,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import com.example.root.sunshine.data.WeatherContract;
+import com.example.root.sunshine.sync.SunshineSyncAdapter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -38,12 +39,9 @@ public class SettingsActivity extends PreferenceActivity
      * is changed.)
      */
     private void bindPreferenceSummaryToValue(Preference preference) {
-// Set the listener to watch for value changes.
 
         mBindingPreference = true;
         preference.setOnPreferenceChangeListener(this);
-// Trigger the listener immediately with the preference's
-// current value.
         onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
@@ -52,29 +50,22 @@ public class SettingsActivity extends PreferenceActivity
     }
     @Override
     public boolean onPreferenceChange(Preference preference, Object value) {
-        String stringValue = value.toString();
 
+        String stringValue = value.toString();
         if ( !mBindingPreference ) {
             if (preference.getKey().equals(getString(R.string.pref_location_key))) {
-                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
-                String location = value.toString();
-                weatherTask.execute(location);
+                SunshineSyncAdapter.syncImmediately(this);
             } else {
-                // notify code that weather may be impacted
                 getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
             }
         }
-
         if (preference instanceof ListPreference) {
-// For list preferences, look up the correct display value in
-// the preference's 'entries' list (since they have separate labels/values).
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(stringValue);
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
         } else {
-// For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
         }
         return true;
